@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Activity, LogIn, Sparkles, UserPlus, AlertCircle } from 'lucide-react';
+import { Activity, LogIn, Sparkles, UserPlus, AlertCircle, Mail, Lock, User, ArrowRight } from 'lucide-react';
 import { auth, db } from '../firebase/config';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
@@ -63,84 +63,100 @@ const Login = () => {
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      className="w-full max-w-md"
-    >
-      <div className="glass-panel rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden">
-        {/* Decorative flair */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-500/30 to-purple-500/30 blur-2xl rounded-full -translate-y-1/2 translate-x-1/2" />
+    <div className="w-full max-w-lg relative z-10 antialiased">
+      {/* Decorative Orbs */}
+      <div className="absolute top-[-20%] left-[-10%] w-72 h-72 bg-violet-600/30 rounded-full blur-[80px] -z-10 animate-pulse-glow" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-64 h-64 bg-cyan-600/20 rounded-full blur-[80px] -z-10 animate-pulse-glow" style={{ animationDelay: '1s' }} />
+
+      <motion.div 
+        initial={{ opacity: 0, y: 30, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        className="glass-panel rounded-[2.5rem] p-8 sm:p-12 shadow-[0_0_50px_rgba(0,0,0,0.5)] relative overflow-hidden"
+      >
+        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-violet-500/50 to-transparent" />
         
-        <div className="flex justify-center mb-8 relative z-10">
-          <div className="relative">
-            <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl blur opacity-30 animate-pulse"></div>
-            <div className="relative bg-slate-800 p-4 rounded-2xl border border-slate-700">
-               <Activity className="w-10 h-10 text-indigo-400" />
+        <div className="flex justify-center mb-10 relative z-10 animate-float">
+          <div className="relative group cursor-default">
+            <div className="absolute -inset-2 bg-gradient-to-r from-violet-600 to-cyan-500 rounded-2xl blur-xl opacity-40 group-hover:opacity-60 transition duration-500"></div>
+            <div className="relative bg-gray-900/80 backdrop-blur-sm p-5 rounded-2xl border border-white/10 shadow-2xl">
+               <Activity className="w-12 h-12 text-violet-400 group-hover:scale-110 transition-transform duration-500 drop-shadow-[0_0_15px_rgba(139,92,246,0.5)]" />
             </div>
           </div>
         </div>
         
-        <div className="text-center mb-8 text-white relative z-10">
-          <h1 className="text-4xl font-bold tracking-tight mb-2 flex items-center justify-center gap-2">
-            Code<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">Nynx</span> <Sparkles className="w-6 h-6 text-yellow-400" />
+        <div className="text-center mb-10 text-white relative z-10">
+          <h1 className="text-5xl font-extrabold tracking-tight mb-3 flex items-center justify-center gap-3 drop-shadow-lg">
+            Code<span className="gradient-text">Nynx</span>
+            <Sparkles className="w-7 h-7 text-amber-400 drop-shadow-[0_0_10px_rgba(251,191,36,0.5)]" />
           </h1>
-          <p className="text-slate-400 text-sm">Reflective Social Entrepreneurship</p>
+          <p className="text-gray-400 font-medium tracking-wide">Reflective Social Entrepreneurship</p>
         </div>
 
         <AnimatePresence mode="wait">
           {error && (
             <motion.div 
-              initial={{ height: 0, opacity: 0 }} 
-              animate={{ height: "auto", opacity: 1 }} 
-              exit={{ height: 0, opacity: 0 }}
-              className="bg-red-500/10 border border-red-500/50 text-red-400 p-4 rounded-xl mb-6 flex items-start gap-3 text-sm relative z-10"
+              initial={{ height: 0, opacity: 0, y: -10 }} 
+              animate={{ height: "auto", opacity: 1, y: 0 }} 
+              exit={{ height: 0, opacity: 0, y: -10 }}
+              className="bg-rose-500/10 border border-rose-500/30 text-rose-400 p-4 rounded-2xl mb-8 flex items-start gap-3 text-sm relative z-10 shadow-inner"
             >
-              <AlertCircle className="w-5 h-5 shrink-0" />
-              <p>{error}</p>
+              <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 mt-0.5" />
+              <p className="leading-relaxed">{error}</p>
             </motion.div>
           )}
         </AnimatePresence>
 
-        <form onSubmit={handleSubmit} className="space-y-5 text-white pb-3 relative z-10">
-          {isSignUp && (
-            <motion.div 
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="space-y-1"
-            >
-              <label className="text-sm font-medium text-slate-300 ml-1">Full Name</label>
-              <input 
-                type="text" 
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full bg-slate-900/50 border border-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-4 py-3 outline-none transition-all placeholder:text-slate-600 shadow-inner"
-                placeholder="Leader Name"
-                required={isSignUp}
-              />
-            </motion.div>
-          )}
+        <form onSubmit={handleSubmit} className="space-y-6 text-white relative z-10">
+          <AnimatePresence>
+            {isSignUp && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0, scale: 0.95 }}
+                animate={{ opacity: 1, height: 'auto', scale: 1 }}
+                exit={{ opacity: 0, height: 0, scale: 0.95 }}
+                transition={{ duration: 0.3 }}
+                className="space-y-1.5"
+              >
+                <label className="text-sm font-semibold text-gray-300 ml-1 flex items-center gap-2">
+                  <User className="w-4 h-4 text-violet-400" /> Full Name
+                </label>
+                <div className="relative group">
+                  <input 
+                    type="text" 
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full bg-gray-900/50 border border-gray-700/50 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 rounded-2xl px-5 py-3.5 outline-none transition-all placeholder:text-gray-600 shadow-inner text-base"
+                    placeholder="E.g. Jane Doe"
+                    required={isSignUp}
+                  />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
           
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-slate-300 ml-1">Email</label>
+          <div className="space-y-1.5">
+            <label className="text-sm font-semibold text-gray-300 ml-1 flex items-center gap-2">
+              <Mail className="w-4 h-4 text-cyan-400" /> Email Address
+            </label>
             <input 
               type="email" 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-slate-900/50 border border-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-4 py-3 outline-none transition-all placeholder:text-slate-600 shadow-inner"
+              className="w-full bg-gray-900/50 border border-gray-700/50 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 rounded-2xl px-5 py-3.5 outline-none transition-all placeholder:text-gray-600 shadow-inner text-base"
               placeholder="leader@codenynx.app"
               required
             />
           </div>
-          <div className="space-y-1">
-             <label className="text-sm font-medium text-slate-300 ml-1">Password</label>
+          
+          <div className="space-y-1.5">
+             <label className="text-sm font-semibold text-gray-300 ml-1 flex items-center gap-2">
+               <Lock className="w-4 h-4 text-violet-400" /> Password
+             </label>
             <input 
               type="password" 
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-slate-900/50 border border-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-4 py-3 outline-none transition-all placeholder:text-slate-600 shadow-inner"
+              className="w-full bg-gray-900/50 border border-gray-700/50 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 rounded-2xl px-5 py-3.5 outline-none transition-all placeholder:text-gray-600 shadow-inner text-base tracking-widest"
               placeholder="••••••••"
               required
               minLength={6}
@@ -150,51 +166,57 @@ const Login = () => {
           <button 
             type="submit" 
             disabled={isLoading}
-            className="w-full relative group overflow-hidden rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-800 disabled:cursor-not-allowed transition-colors mt-2 py-3.5 px-4 flex items-center justify-center gap-2 font-semibold shadow-lg shadow-indigo-500/25"
+            className="w-full relative group overflow-hidden rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 disabled:from-gray-700 disabled:to-gray-800 disabled:cursor-not-allowed transition-all mt-4 py-4 px-6 flex items-center justify-center gap-3 font-bold text-lg shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_30px_rgba(139,92,246,0.5)] border border-white/10"
           >
             {!isLoading && (
-              <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
+              <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-[150%] skew-x-[-15deg] group-hover:animate-[shimmer_2s_infinite]" />
             )}
-            <span>{isLoading ? "Processing..." : (isSignUp ? "Create Protocol" : "Enter Simulation")}</span>
-            {!isLoading && (isSignUp ? <UserPlus className="w-5 h-5 group-hover:scale-110 transition-transform" /> : <LogIn className="w-5 h-5 group-hover:translate-x-1 transition-transform" />)}
+            <span className="relative z-10">{isLoading ? "Authenticating..." : (isSignUp ? "Create Protocol" : "Enter Simulation")}</span>
+            {!isLoading && (
+              <span className="relative z-10 bg-white/10 p-1.5 rounded-full group-hover:bg-white/20 transition-colors">
+                {isSignUp ? <UserPlus className="w-5 h-5 group-hover:scale-110 transition-transform" /> : <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
+              </span>
+            )}
           </button>
         </form>
 
-        <div className="mt-4 flex items-center gap-4 relative z-10">
-          <div className="flex-1 border-t border-slate-700"></div>
-          <span className="text-xs text-slate-500 uppercase tracking-widest font-bold">OR</span>
-          <div className="flex-1 border-t border-slate-700"></div>
+        <div className="mt-8 flex items-center gap-4 relative z-10">
+          <div className="flex-1 border-t border-gray-700/50"></div>
+          <span className="text-xs text-gray-500 uppercase tracking-[0.2em] font-bold">OR</span>
+          <div className="flex-1 border-t border-gray-700/50"></div>
         </div>
 
         <button 
           onClick={handleGoogleSignIn}
           disabled={isLoading}
           type="button"
-          className="mt-6 w-full relative z-10 group overflow-hidden rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-50 transition-colors py-3 px-4 flex items-center justify-center gap-3 font-semibold border border-slate-700 shadow-xl"
+          className="mt-8 w-full relative z-10 group overflow-hidden rounded-2xl bg-gray-800/80 hover:bg-gray-700/80 disabled:opacity-50 transition-all py-4 px-6 flex items-center justify-center gap-4 font-semibold text-gray-200 border border-gray-600/50 hover:border-gray-500 shadow-xl"
         >
-          <svg className="w-5 h-5 bg-white rounded-full p-0.5" viewBox="0 0 24 24">
-            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-          </svg>
-          <span className="text-white">Sign in with Google</span>
+          <div className="bg-white p-1.5 rounded-full shadow-sm group-hover:scale-110 transition-transform">
+            <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+            </svg>
+          </div>
+          <span>Continue with Google</span>
         </button>
         
-        <div className="mt-8 text-center text-sm text-slate-500 relative z-10">
+        <div className="mt-10 text-center text-sm text-gray-400 relative z-10">
           <p>
             {isSignUp ? "Already have an access code?" : "Don't have an account?"} 
             <button 
               type="button"
               onClick={() => { setIsSignUp(!isSignUp); setError(''); }}
-              className="text-indigo-400 hover:text-indigo-300 transition-colors font-medium ml-2"
+              className="text-cyan-400 hover:text-cyan-300 transition-colors font-bold ml-2 hover:underline underline-offset-4"
             >
               {isSignUp ? "Log in here" : "Sign up here"}
             </button>
           </p>
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
+    </div>
   );
 };
 
